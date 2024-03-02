@@ -1,4 +1,4 @@
-﻿@page "/products/1"
+﻿@page "/products/5"
 @inject UserManager<ApplicationUser> UserManager
 @inject UserService UserService
 @inject AuthenticationStateProvider StateProvider
@@ -63,7 +63,7 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        product = new Product { Id = 1, Name = "Sour Patch Kids", ImageUrl = "/images/product1.jpg", Description = "Not real kids", Quantity = 10, Price = 20 };
+        product = new Product { Id = 5, Name = "Fruit Pastilles", ImageUrl = "/images/product5.jpg", Description = "Old people candy", Quantity = 8, Price = 18 };
     }
 
     public async Task AddToCart(Product product)

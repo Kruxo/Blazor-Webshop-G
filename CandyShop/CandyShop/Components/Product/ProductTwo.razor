@@ -1,4 +1,4 @@
-﻿@page "/products/1"
+﻿@page "/products/2"
 @inject UserManager<ApplicationUser> UserManager
 @inject UserService UserService
 @inject AuthenticationStateProvider StateProvider
@@ -37,8 +37,8 @@
             </a>
             <div class="product-details">
                 <h4>@product.Name</h4>
-                <p>Description: @product.Description</p>
-                <p>Quantity: @product.Quantity</p>
+                <p>Price: @product.Description</p>
+                <p>Price: @product.Quantity</p>
                 <p>Price: @product.Price kr</p>
                 <button @onclick="() => AddToCart(product)">Add to Cart</button>
             </div>
@@ -63,7 +63,7 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        product = new Product { Id = 1, Name = "Sour Patch Kids", ImageUrl = "/images/product1.jpg", Description = "Not real kids", Quantity = 10, Price = 20 };
+        product = new Product { Id = 2, Name = "Wine Gums", ImageUrl = "/images/product2.jpg", Description = "Neither red or white wine", Quantity = 15, Price = 25 };
     }
 
     public async Task AddToCart(Product product)

@@ -61,6 +61,7 @@ else
             ConfirmationItems = await localStorage.GetItemAsync<List<ClientProduct>>(userId);
             StateHasChanged();
 
+            //Rensar produkterna i våran localstorage
             await localStorage.RemoveItemAsync(userId);
         }
 

@@ -85,6 +85,7 @@
 
             ConfirmationItems = await localStorage.GetItemAsync<List<ClientProduct>>(userId);
             StateHasChanged();
+
         }
     }
 
@@ -100,7 +101,7 @@
         }
         else
         {
-            var orderDetails = new OrderDetailsModel
+            var orderDetails = new OrderDetails
                 {
                     Products = ConfirmationItems,
                     Address = new UserAddress
