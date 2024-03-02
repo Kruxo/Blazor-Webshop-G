@@ -32,22 +32,18 @@
     @foreach (var product in products)
     {
         <div class="product-item">
-            <a href="/products/@product.Id">
-                <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" />
-            </a>
+            <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" @onclick="() => NavigateImage(product)" />
             <div class="product-details">
                 <h4>@product.Name</h4>
                 <p>Price: @product.Price kr</p>
                 <button @onclick="() => AddToCart(product)">Add to Cart</button>
             </div>
-
         </div>
     }
 
 </div>
 
 <button @onclick="GoToConfirmation">Go To Cart</button>
-
 
 @code {
     ApplicationUser? user;
@@ -69,6 +65,12 @@
         new Product { Id = 5, Name = "Fruit Pastilles", ImageUrl = "/images/product5.jpg", Description = "Old people candy", Quantity = 8, Price = 18 },
     };
 
+    public async Task NavigateImage(Product productid)
+    {
+        int id = productid.Id;
+        NavigationManager.NavigateTo($"/product/{id}");
+    }
+
     public async Task AddToCart(Product product)
     {
         if (user is not null)
@@ -80,7 +82,7 @@
 
 
     public async Task GoToConfirmation()
-        {
+    {
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 

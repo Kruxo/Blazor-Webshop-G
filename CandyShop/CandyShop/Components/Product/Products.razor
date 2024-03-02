@@ -1,4 +1,4 @@
-﻿@page "/products/3"
+﻿@page "/product/{productId:int}"
 @inject UserManager<ApplicationUser> UserManager
 @inject UserService UserService
 @inject AuthenticationStateProvider StateProvider
@@ -57,13 +57,17 @@
     AuthenticationState? authenticationState;
     Product product;
 
+    [Parameter]
+    public int ProductId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         authenticationState = await StateProvider.GetAuthenticationStateAsync();
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        product = new Product { Id = 3, Name = "Jelly Tots", ImageUrl = "/images/product3.jpg", Description = "Skittles from wish", Quantity = 5, Price = 15 };
+        // Get the product based on the provided ProductId
+        product = products.FirstOrDefault(p => p.Id == ProductId);
     }
 
     public async Task AddToCart(Product product)
@@ -83,4 +87,13 @@
         await localStorage.SetItemAsync(user.Id, user.Products.ToList());
         NavigationManager.NavigateTo("/orderconfirmcart");
     }
+
+    public List<Product> products = new List<Product>
+    {
+        new Product { Id = 1, Name = "Sour Patch Kids", ImageUrl = "/images/product1.jpg", Description = "Not real kids", Quantity = 10, Price = 20 },
+        new Product { Id = 2, Name = "Wine Gums", ImageUrl = "/images/product2.jpg", Description = "Neither red or white wine", Quantity = 15, Price = 25 },
+        new Product { Id = 3, Name = "Jelly Tots", ImageUrl = "/images/product3.jpg", Description = "Skittles from wish", Quantity = 5, Price = 15 },
+        new Product { Id = 4, Name = "Jelly Babies", ImageUrl = "/images/product4.jpg", Description = "Again not real babies", Quantity = 20, Price = 15 },
+        new Product { Id = 5, Name = "Fruit Pastilles", ImageUrl = "/images/product5.jpg", Description = "Old people candy", Quantity = 8, Price = 18 },
+    };
 }

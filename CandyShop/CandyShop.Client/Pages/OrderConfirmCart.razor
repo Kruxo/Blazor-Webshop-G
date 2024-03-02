@@ -44,6 +44,10 @@
 <h4>Enter Your Address</h4>
 <form>
     <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" @bind="Address.Name" />
+    </div>
+    <div>
         <label for="street">Street:</label>
         <input type="text" id="street" @bind="Address.Street" />
     </div>
@@ -91,7 +95,8 @@
 
     private async Task SubmitOrder()
     {
-        if (string.IsNullOrEmpty(Address.Street) ||
+        if (string.IsNullOrEmpty(Address.Name) ||
+            string.IsNullOrEmpty(Address.Street) ||
             string.IsNullOrEmpty(Address.City) ||
             string.IsNullOrEmpty(Address.PostalCode) ||
             string.IsNullOrEmpty(Address.Country))
@@ -106,6 +111,7 @@
                     Products = ConfirmationItems,
                     Address = new UserAddress
                     {
+                        Name = Address.Name,
                         Street = Address.Street,
                         City = Address.City,
                         PostalCode = Address.PostalCode,
@@ -114,10 +120,12 @@
                 };
 
             //Serialiserar adressen
-            var addressParameter = $"street={Uri.EscapeDataString(orderDetails.Address.Street)}" +
+            var addressParameter = $"&name={Uri.EscapeDataString(orderDetails.Address.Name)}" +
+                                    $"&street={Uri.EscapeDataString(orderDetails.Address.Street)}" +
                                     $"&city={Uri.EscapeDataString(orderDetails.Address.City)}" +
                                     $"&postalCode={Uri.EscapeDataString(orderDetails.Address.PostalCode)}" +
                                     $"&country={Uri.EscapeDataString(orderDetails.Address.Country)}";
+
 
             var navigateUrl = $"/ordersubmitted?{addressParameter}";
 

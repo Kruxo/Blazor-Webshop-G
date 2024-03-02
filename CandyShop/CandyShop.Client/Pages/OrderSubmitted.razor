@@ -25,6 +25,7 @@ else
 }
 
 <h4>Address</h4>
+<p>Name: @Address.Name</p>
 <p>Street: @Address.Street</p>
 <p>City: @Address.City</p>
 <p>Postal Code: @Address.PostalCode</p>
@@ -44,6 +45,7 @@ else
 
         Address = new UserAddress
             {
+                Name = queryParameters["name"],
                 Street = queryParameters["street"],
                 City = queryParameters["city"],
                 PostalCode = queryParameters["postalCode"],
