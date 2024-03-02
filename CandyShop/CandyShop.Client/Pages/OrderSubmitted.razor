@@ -1,0 +1,69 @@
+﻿@page "/ordersubmitted"
+@inject AuthenticationStateProvider StateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@rendermode InteractiveWebAssembly
+
+
+<h3>Order Confirmed</h3>
+
+<h4>Order Details</h4>
+
+@if (ConfirmationItems != null && ConfirmationItems.Count > 0)
+{
+    <ul>
+        @foreach (var product in ConfirmationItems)
+        {
+            <li>@product.Name - @product.Price kr</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No order details available.</p>
+}
+
+<h4>Address</h4>
+<p>Street: @Address.Street</p>
+<p>City: @Address.City</p>
+<p>Postal Code: @Address.PostalCode</p>
+<p>Country: @Address.Country</p>
+
+@code {
+
+    UserAddress Address = new UserAddress();
+    AuthenticationState authenticationState;
+    List<ClientProduct> ConfirmationItems = new List<ClientProduct>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Hämtar URL sträng och parsar 
+        var queryString = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
+        var queryParameters = System.Web.HttpUtility.ParseQueryString(queryString);
+
+        Address = new UserAddress
+            {
+                Street = queryParameters["street"],
+                City = queryParameters["city"],
+                PostalCode = queryParameters["postalCode"],
+                Country = queryParameters["country"]
+            };
+
+        if (firstRender)
+        {
+            authenticationState = await StateProvider.GetAuthenticationStateAsync();
+            var userId = authenticationState.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .First()
+                .Value;
+       
+            ConfirmationItems = await localStorage.GetItemAsync<List<ClientProduct>>(userId);
+            StateHasChanged();
+
+            await localStorage.RemoveItemAsync(userId);
+        }
+
+    }
+
+}
