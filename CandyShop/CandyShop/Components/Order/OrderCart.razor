@@ -1,12 +1,12 @@
-﻿@page "/orderconfirmcartt"
+﻿@page "/ordercart"
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider StateProvider
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 @attribute [Authorize]
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 
 <style>
 
@@ -20,6 +20,7 @@
         margin-bottom: 20px;
         text-align: center;
     }
+
     .product-image {
         width: 100px;
         height: 150px;
@@ -28,7 +29,7 @@
     }
 </style>
 
-<h3>OrderConfirmation</h3>
+<h3>Order Cart</h3>
 
 <div class="product-container">
     @foreach (var product in ConfirmationItems)
@@ -73,7 +74,7 @@
 
 @code {
     AuthenticationState authenticationState;
-    List<ClientProduct> ConfirmationItems = new List<ClientProduct>();
+    List<Product> ConfirmationItems = new List<Product>();
     public UserAddress Address = new UserAddress();
     string ErrorMessage = string.Empty;
 
@@ -87,13 +88,13 @@
                 .First()
                 .Value;
 
-            ConfirmationItems = await localStorage.GetItemAsync<List<ClientProduct>>(userId);
+            ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
 
         }
     }
 
-    private async Task SubmitOrder()
+    public async Task SubmitOrder()
     {
         if (string.IsNullOrEmpty(Address.Name) ||
             string.IsNullOrEmpty(Address.Street) ||
@@ -106,7 +107,7 @@
         }
         else
         {
-            var orderDetails = new OrderDetails
+            var orderDetails = new UserOrder
                 {
                     Products = ConfirmationItems,
                     Address = new UserAddress
@@ -130,6 +131,9 @@
             var navigateUrl = $"/ordersubmitted?{addressParameter}";
 
             NavigationManager.NavigateTo(navigateUrl);
+
+
+
         }
 
     }

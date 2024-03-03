@@ -4,7 +4,7 @@
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -32,7 +32,7 @@
     @foreach (var product in products)
     {
         <div class="product-item">
-            <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" @onclick="() => NavigateImage(product)" />
+            <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" @onclick="() => NavigateToProduct(product.Id)" />
             <div class="product-details">
                 <h4>@product.Name</h4>
                 <p>Price: @product.Price kr</p>
@@ -65,10 +65,9 @@
         new Product { Id = 5, Name = "Fruit Pastilles", ImageUrl = "/images/product5.jpg", Description = "Old people candy", Quantity = 8, Price = 18 },
     };
 
-    public async Task NavigateImage(Product productid)
+    public async Task NavigateToProduct(int productId)
     {
-        int id = productid.Id;
-        NavigationManager.NavigateTo($"/product/{id}");
+        NavigationManager.NavigateTo($"/product/{productId}");
     }
 
     public async Task AddToCart(Product product)
@@ -76,18 +75,17 @@
         if (user is not null)
         {
             user.Products.Add(product);
-            await localStorage.SetItemAsync(user.Id, user.Products.ToList());
+            await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
         }
     }
-
 
     public async Task GoToConfirmation()
     {
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        await localStorage.SetItemAsync(user.Id, user.Products.ToList());
-        NavigationManager.NavigateTo("/orderconfirmcart");
+        await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+        NavigationManager.NavigateTo("/ordercart");
     }
 
 }

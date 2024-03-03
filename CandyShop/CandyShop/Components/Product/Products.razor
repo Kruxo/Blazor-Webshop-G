@@ -4,7 +4,7 @@
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -75,7 +75,7 @@
         if (user is not null)
         {
             user.Products.Add(product);
-            await localStorage.SetItemAsync(user.Id, user.Products.ToList());
+            await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
         }
     }
 
@@ -84,8 +84,8 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        await localStorage.SetItemAsync(user.Id, user.Products.ToList());
-        NavigationManager.NavigateTo("/orderconfirmcart");
+        await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+        NavigationManager.NavigateTo("/ordercart");
     }
 
     public List<Product> products = new List<Product>

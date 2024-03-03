@@ -1,11 +1,11 @@
-﻿@page "/ordersubmittedd"
+﻿@page "/ordersubmitted"
 @inject AuthenticationStateProvider StateProvider
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 
-
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 <h3>Order Confirmed</h3>
 
 <h4>Order Details</h4>
@@ -35,11 +35,11 @@ else
 
     UserAddress Address = new UserAddress();
     AuthenticationState authenticationState;
-    List<ClientProduct> ConfirmationItems = new List<ClientProduct>();
+    List<Product> ConfirmationItems = new List<Product>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Hämtar URL sträng och parsar 
+        // Hämtar URL sträng och parsar
         var queryString = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
         var queryParameters = System.Web.HttpUtility.ParseQueryString(queryString);
 
@@ -59,12 +59,10 @@ else
                 .Where(c => c.Type == ClaimTypes.NameIdentifier)
                 .First()
                 .Value;
-       
-            ConfirmationItems = await localStorage.GetItemAsync<List<ClientProduct>>(userId);
+
+            ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
 
-            //Rensar produkterna i våran localstorage
-            await localStorage.RemoveItemAsync(userId);
         }
 
     }
