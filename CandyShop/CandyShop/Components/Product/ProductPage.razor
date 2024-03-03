@@ -3,8 +3,8 @@
 @inject UserService UserService
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -72,10 +72,13 @@
 
     public async Task AddToCart(Product product)
     {
+        //Hårdkodad id
+        string userId = "TestUserId";
+
         if (user is not null)
         {
             user.Products.Add(product);
-            await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+            await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         }
     }
 

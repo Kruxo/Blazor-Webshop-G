@@ -1,8 +1,6 @@
 ﻿@page "/ordercart"
-
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider StateProvider
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 @attribute [Authorize]
@@ -32,13 +30,20 @@
 <h3>Order Cart</h3>
 
 <div class="product-container">
-    @foreach (var product in ConfirmationItems)
+    @if (ConfirmationItems != null)
     {
-        <div class="product-item">
-            <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" />
-            <p>@product.Name</p>
-            <p>@product.Price Kr</p>
-        </div>
+        @foreach (var product in ConfirmationItems)
+        {
+            <div class="product-item">
+                <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" />
+                <p>@product.Name</p>
+                <p>@product.Price Kr</p>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No items in the cart.</p>
     }
 </div>
 
@@ -82,19 +87,14 @@
     {
         if (firstRender)
         {
-            authenticationState = await StateProvider.GetAuthenticationStateAsync();
-            var userId = authenticationState.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .First()
-                .Value;
+            string userId = "TestUserId";
 
             ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
-
         }
     }
 
-    public async Task SubmitOrder()
+    private async Task SubmitOrder()
     {
         if (string.IsNullOrEmpty(Address.Name) ||
             string.IsNullOrEmpty(Address.Street) ||
@@ -103,6 +103,11 @@
             string.IsNullOrEmpty(Address.Country))
         {
             ErrorMessage = "Please fill in all address fields.";
+            return;
+        }
+        else if (ConfirmationItems == null || ConfirmationItems.Count == 0)
+        {
+            ErrorMessage = "Your cart is empty. Please add products to your cart before submitting the order.";
             return;
         }
         else
@@ -129,7 +134,6 @@
 
 
             var navigateUrl = $"/ordersubmitted?{addressParameter}";
-
             NavigationManager.NavigateTo(navigateUrl);
 
 
@@ -137,6 +141,5 @@
         }
 
     }
-
 
 }

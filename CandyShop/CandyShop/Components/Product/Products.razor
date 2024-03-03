@@ -3,8 +3,8 @@
 @inject UserService UserService
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -32,7 +32,7 @@
     @if (product != null)
     {
         <div class="product-item">
-            <a href="/products/@product.Id">
+            <a href="/product/@product.Id">
                 <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" />
             </a>
             <div class="product-details">
@@ -66,16 +66,17 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        // Get the product based on the provided ProductId
         product = products.FirstOrDefault(p => p.Id == ProductId);
     }
 
     public async Task AddToCart(Product product)
     {
+        string userId = "TestUserId";
+
         if (user is not null)
         {
             user.Products.Add(product);
-            await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+            await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         }
     }
 

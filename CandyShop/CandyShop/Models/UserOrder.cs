@@ -1,6 +1,4 @@
-﻿using CandyShop.Client.Models;
-
-namespace CandyShop.Models
+﻿namespace CandyShop.Models
 {
     public class UserOrder
     {

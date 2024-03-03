@@ -1,11 +1,10 @@
 ﻿@page "/ordersubmitted"
 @inject AuthenticationStateProvider StateProvider
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 <h3>Order Confirmed</h3>
 
 <h4>Order Details</h4>
@@ -52,19 +51,16 @@ else
                 Country = queryParameters["country"]
             };
 
-        if (firstRender)
+        @if (firstRender)
         {
-            authenticationState = await StateProvider.GetAuthenticationStateAsync();
-            var userId = authenticationState.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .First()
-                .Value;
+            string userId = "TestUserId";
 
             ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
 
+            // Rensar produkterna i vår sessionStorage
+            await sessionStorage.RemoveItemAsync(userId);
         }
-
     }
 
 }
