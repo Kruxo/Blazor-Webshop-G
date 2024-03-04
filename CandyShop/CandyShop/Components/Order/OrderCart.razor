@@ -82,13 +82,12 @@
     List<Product> ConfirmationItems = new List<Product>();
     public UserAddress Address = new UserAddress();
     string ErrorMessage = string.Empty;
+    string userId = "TestUserId";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            string userId = "TestUserId";
-
             ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
         }

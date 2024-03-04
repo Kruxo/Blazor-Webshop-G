@@ -49,11 +49,18 @@
     ApplicationUser? user;
     AuthenticationState? authenticationState;
 
+    //Hårdkodad id
+    string userId = "TestUserId";
+
     protected override async Task OnInitializedAsync()
     {
         authenticationState = await StateProvider.GetAuthenticationStateAsync();
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
+
+        //Nollställer våran lista
+        user.Products.Clear();
+
     }
 
     public List<Product> products = new List<Product>
@@ -72,8 +79,6 @@
 
     public async Task AddToCart(Product product)
     {
-        //Hårdkodad id
-        string userId = "TestUserId";
 
         if (user is not null)
         {

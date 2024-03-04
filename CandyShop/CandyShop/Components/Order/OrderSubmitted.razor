@@ -2,6 +2,8 @@
 @inject AuthenticationStateProvider StateProvider
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
+
+
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -35,6 +37,8 @@ else
     UserAddress Address = new UserAddress();
     AuthenticationState authenticationState;
     List<Product> ConfirmationItems = new List<Product>();
+    string userId = "TestUserId";
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -53,14 +57,12 @@ else
 
         @if (firstRender)
         {
-            string userId = "TestUserId";
-
             ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
 
             // Rensar produkterna i vår sessionStorage
-            await sessionStorage.RemoveItemAsync(userId);
+            await sessionStorage.RemoveItemAsync(userId);   
         }
-    }
+    }   
 
 }
