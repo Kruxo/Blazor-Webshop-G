@@ -48,8 +48,6 @@
 @code {
     ApplicationUser? user;
     AuthenticationState? authenticationState;
-
-    //Hårdkodad id
     string userId = "TestUserId";
 
     protected override async Task OnInitializedAsync()
@@ -57,10 +55,6 @@
         authenticationState = await StateProvider.GetAuthenticationStateAsync();
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
-
-        //Nollställer våran lista
-        user.Products.Clear();
-
     }
 
     public List<Product> products = new List<Product>
@@ -92,8 +86,9 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+        await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         NavigationManager.NavigateTo("/ordercart");
+
     }
 
 }

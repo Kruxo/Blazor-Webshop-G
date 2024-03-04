@@ -2,7 +2,8 @@
 @inject AuthenticationStateProvider StateProvider
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
-
+@inject UserManager<ApplicationUser> UserManager
+@inject UserService UserService
 
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -33,36 +34,44 @@ else
 <p>Country: @Address.Country</p>
 
 @code {
-
+    ApplicationUser? user;
     UserAddress Address = new UserAddress();
     AuthenticationState authenticationState;
     List<Product> ConfirmationItems = new List<Product>();
     string userId = "TestUserId";
 
+    protected override async Task OnInitializedAsync()
+    {
+        authenticationState = await StateProvider.GetAuthenticationStateAsync();
+        var stateUser = await UserManager.GetUserAsync(authenticationState.User);
+        user = await UserService.GetUserProductsInfo(stateUser);
+
+        //Nollställer våran lista
+        user.Products.Clear();
+
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Hämtar URL sträng och parsar
-        var queryString = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
-        var queryParameters = System.Web.HttpUtility.ParseQueryString(queryString);
-
-        Address = new UserAddress
-            {
-                Name = queryParameters["name"],
-                Street = queryParameters["street"],
-                City = queryParameters["city"],
-                PostalCode = queryParameters["postalCode"],
-                Country = queryParameters["country"]
-            };
-
-        @if (firstRender)
+        if (firstRender)
         {
+            // Hämtar URL sträng och parsar
+            var queryString = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
+            var queryParameters = System.Web.HttpUtility.ParseQueryString(queryString);
+
+            Address = new UserAddress
+                {
+                    Name = queryParameters["name"],
+                    Street = queryParameters["street"],
+                    City = queryParameters["city"],
+                    PostalCode = queryParameters["postalCode"],
+                    Country = queryParameters["country"]
+                };
+
             ConfirmationItems = await sessionStorage.GetItemAsync<List<Product>>(userId);
             StateHasChanged();
 
-            // Rensar produkterna i vår sessionStorage
-            await sessionStorage.RemoveItemAsync(userId);   
+            await sessionStorage.RemoveItemAsync(userId);
         }
-    }   
-
+    }
 }
