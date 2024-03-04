@@ -30,7 +30,7 @@
 <h3>Order Cart</h3>
 
 <div class="product-container">
-    @if (ConfirmationItems != null)
+    @if (ConfirmationItems != null && ConfirmationItems.Count > 0)
     {
         @foreach (var product in ConfirmationItems)
         {
