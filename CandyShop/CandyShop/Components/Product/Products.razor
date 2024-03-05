@@ -84,7 +84,7 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
 
-        await sessionStorage.SetItemAsync(user.Id, user.Products.ToList());
+        await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         NavigationManager.NavigateTo("/ordercart");
     }
 
