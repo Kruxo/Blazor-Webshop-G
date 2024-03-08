@@ -37,7 +37,7 @@
             <div class="product-details">
                 <h4>@product.Name</h4>
                 <p>Price: @ConvertCurrency(product.Price) @toCurrency</p>
-                <button @onclick="() => AddToCart(product)">Add to Cart</button>
+                <button @onclick="() => AddToCart(product)">Add to Cart (Quantity: @product.Quantity)</button>
             </div>
         </div>
     }
@@ -89,10 +89,11 @@
 
     public async Task AddToCart(Product product)
     {
-
-        if (user is not null)
+        if (user is not null && product.Quantity > 0)
         {
             user.Products.Add(product);
+            product.Quantity--;
+
             await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         }
     }
