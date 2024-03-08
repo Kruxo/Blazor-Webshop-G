@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject HttpClient HttpClient
 
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -35,20 +36,23 @@
             <img src="@product.ImageUrl" alt="@($"Product{product.Id}")" class="product-image" @onclick="() => NavigateToProduct(product.Id)" />
             <div class="product-details">
                 <h4>@product.Name</h4>
-                <p>Price: @product.Price kr</p>
+                <p>Price: @ConvertCurrency(product.Price) @toCurrency</p>
                 <button @onclick="() => AddToCart(product)">Add to Cart</button>
             </div>
         </div>
     }
-
 </div>
 
 <button @onclick="GoToConfirmation">Go To Cart</button>
+@* <button @onclick="ChangeCurrency">Change Currency</button> *@
 
 @code {
     ApplicationUser? user;
     AuthenticationState? authenticationState;
     string userId = "TestUserId";
+    public float exchangeRate = 1;
+    string fromCurrency = "USD";
+    string toCurrency = "EUR";
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,6 +60,18 @@
         var stateUser = await UserManager.GetUserAsync(authenticationState.User);
         user = await UserService.GetUserProductsInfo(stateUser);
     }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         HttpClient.DefaultRequestHeaders.Add("X-Api-Key", "zBHK/0niL00SbbXY68qt4w==Wu29rq1TsPyjw6Cr");
+    //         var response = await HttpClient.GetFromJsonAsync<ResponseType>($"https://api.api-ninjas.com/v1/exchangerate?pair={fromCurrency}_{toCurrency}");
+    //         exchangeRate = response.exchange_rate;
+
+    //         StateHasChanged();
+    //     }
+    // }
 
     public List<Product> products = new List<Product>
     {
@@ -91,4 +107,29 @@
 
     }
 
+    public string ConvertCurrency(float price)
+    {
+        float convertedPrice = price * exchangeRate;
+        return convertedPrice.ToString("0.00");
+    }
+
+    // public async Task ChangeCurrency()
+    // {
+    //     toCurrency = (toCurrency == "EUR") ? "USD" : "EUR";
+    //     await UpdateExchangeRate();
+
+    //     StateHasChanged();
+    // }
+
+    // private async Task UpdateExchangeRate()
+    // {
+    //     var response = await HttpClient.GetFromJsonAsync<ResponseType>($"https://api.api-ninjas.com/v1/exchangerate?pair={fromCurrency}_{toCurrency}");
+    //     exchangeRate = response.exchange_rate;
+    // }
+
+    class ResponseType
+    {
+        public string currency_pair { get; set; }
+        public float exchange_rate { get; set; }
+    }
 }

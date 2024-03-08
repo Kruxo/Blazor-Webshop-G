@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider StateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject HttpClient HttpClient
 
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -39,7 +40,7 @@
                 <h4>@product.Name</h4>
                 <p>Description: @product.Description</p>
                 <p>Quantity: @product.Quantity</p>
-                <p>Price: @product.Price kr</p>
+                <p>Price: @ConvertCurrency(product.Price) @toCurrency</p>
                 <button @onclick="() => AddToCart(product)">Add to Cart</button>
             </div>
         </div>
@@ -57,6 +58,9 @@
     AuthenticationState? authenticationState;
     Product product;
     string userId = "TestUserId";
+    public float exchangeRate = 1;
+    string fromCurrency = "USD";
+    string toCurrency = "EUR";
 
     [Parameter]
     public int ProductId { get; set; }
@@ -86,6 +90,12 @@
 
         await sessionStorage.SetItemAsync(userId, user.Products.ToList());
         NavigationManager.NavigateTo("/ordercart");
+    }
+
+    public string ConvertCurrency(float price)
+    {
+        float convertedPrice = price * exchangeRate;
+        return convertedPrice.ToString("0.00");
     }
 
     public List<Product> products = new List<Product>
